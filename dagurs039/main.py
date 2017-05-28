@@ -12,7 +12,14 @@ class DaguRS039:
         self.b = smbus.SMBus(1)
         self.addr = addr
 
-    def cfg(self, mtr_cfg: int, btry_lv: int, m1_max: int, m2_max: int, m3_max: int, m4_max: int, i2c_offset: int=0):
+    def cfg(self, mtr_cfg: int, btry_lv: int, m1_max: int, m2_max: int, m3_max: int, m4_max: int,
+            max_rpm: int, encdr_res: int, res_power: int, stall_ms: int, i2c_offset: int=0):
+        self.basic_cfg(mtr_cfg, btry_lv, m1_max, m2_max, m3_max, i2c_offset)
+        time.sleep(0.5)  # from tests I have found 0.2 also works, but this is for safety
+        self.encoder_cfg(max_rpm, encdr_res, res_power, stall_ms)
+        time.sleep(0.5)
+
+    def basic_cfg(self, mtr_cfg: int, btry_lv: int, m1_max: int, m2_max: int, m3_max: int, m4_max: int, i2c_offset: int=0):
         """Write general configuration data to the device."""
         self.b.write_i2c_block_data(self.addr, 1, [0, mtr_cfg, btry_lv, m1_max, m2_max, m3_max, m4_max, i2c_offset, 1])
 
